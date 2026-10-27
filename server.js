@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
   session({
-    secret: "mysecretkey",
+    secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
   })

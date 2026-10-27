@@ -6,7 +6,6 @@ const verificarUsuario = (email, senha, callback) => {
   const hashedSenha = md5Hash.update(senha).digest("hex");
   const query = "SELECT * FROM usuarios WHERE email = ? AND senha = ?";
   pool.query(query, [email, hashedSenha], callback);
-  console.log("Usuário logado com", email, hashedSenha);
 };
 
 module.exports = {
