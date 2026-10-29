@@ -122,11 +122,21 @@ Utilize `.env.example` como referência:
 | `PORT`           | Porta do servidor                                                |
 | `SESSION_SECRET` | Chave usada para assinar o cookie de sessão                      |
 | `DB_HOST`        | Endereço do servidor MySQL                                       |
+| `DB_PORT`        | Porta do servidor MySQL (padrão `3306`)                          |
 | `DB_USER`        | Usuário do banco                                                 |
 | `DB_PASSWORD`    | Senha do banco                                                   |
 | `DB_DATABASE`    | Nome do banco                                                    |
+| `DB_SSL`         | `true` para bancos que exigem conexão segura                     |
 | `GMAIL_USER`     | Conta do Gmail que envia o código de redefinição de senha       |
 | `GMAIL_PASS`     | [Senha de app](https://support.google.com/accounts/answer/185833) dessa conta |
+
+### Banco de dados gratuito
+
+O projeto funciona com qualquer banco compatível com MySQL. Uma opção gratuita e sem prazo de expiração é o [TiDB Cloud Starter](https://www.pingcap.com/tidb-cloud-pricing/):
+
+1. Crie um cluster **Starter** e, em **Connect**, gere a senha e copie host, porta, usuário e nome do banco.
+2. No **SQL Editor** do TiDB Cloud, crie o banco (`CREATE DATABASE receitas;`) e execute o conteúdo de `database/schema.sql`.
+3. Preencha o `.env` com esses dados, usando `DB_PORT=4000` e `DB_SSL=true`.
 
 ## Scripts
 
