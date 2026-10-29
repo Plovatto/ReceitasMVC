@@ -141,7 +141,6 @@ const resetPassword = async (req, res) => {
   try {
     await RedefinirModel.updateUserPassword(email, newPassword);
 
-    console.log("senha atualizadaa ", email, newPassword);
     res.redirect("/login");
   } catch (error) {
     console.error("Erro ao redefinir senha:", error);
