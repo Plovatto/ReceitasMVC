@@ -95,11 +95,11 @@ const sendCode = async (req, res) => {
       res.redirect(`/redefinir/enter-code?email=${email}`);
     } else {
       console.log("Usuário não encontrado:", email);
-      res.render("confirm-email", { error: "E-mail não encontrado" });
+      res.render("confirm-email", { errorMessage: "E-mail não encontrado" });
     }
   } catch (error) {
     console.error("Erro ao buscar usuário:", error);
-    res.render("confirm-email", { error: "Erro ao buscar usuário" });
+    res.render("confirm-email", { errorMessage: "Erro ao buscar usuário" });
   }
 };
 
@@ -168,11 +168,11 @@ const resendCode = async (req, res) => {
       res.redirect(`/redefinir/enter-code?email=${redefinirEmail}`);
     } else {
       console.log("Usuário não encontrado:", redefinirEmail);
-      res.render("confirm-email", { error: "E-mail não encontrado" });
+      res.render("confirm-email", { errorMessage: "E-mail não encontrado" });
     }
   } catch (error) {
     console.error("Erro ao buscar usuário:", error);
-    res.render("confirm-email", { error: "Erro ao buscar usuário" });
+    res.render("confirm-email", { errorMessage: "Erro ao buscar usuário" });
   }
 };
 
