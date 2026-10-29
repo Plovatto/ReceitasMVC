@@ -15,7 +15,7 @@ const findByEmail = (email) => {
 };
 
 const updateUserCode = async (email, code, ) => {
-  await pool.query(
+  await pool.promise().query(
     "UPDATE usuarios SET codigo_confirmacao = ? WHERE email = ?",
     [code, email]
   );
@@ -25,7 +25,7 @@ const updateUserPassword = async (email, newPassword) => {
   try {
     const md5Hash = crypto.createHash("md5").update(newPassword).digest("hex");
 
-    await pool.query("UPDATE usuarios SET senha = ? WHERE email = ?", [
+    await pool.promise().query("UPDATE usuarios SET senha = ? WHERE email = ?", [
       md5Hash,
       email,
     ]);
