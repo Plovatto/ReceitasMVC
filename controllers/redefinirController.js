@@ -37,7 +37,7 @@ async function sendCodeByEmail(email, code, nome, sobrenome) {
       
         <p><span style="color: #d54312;">Passo 1:</span> Acesse a página de redefinição de senha</p>
       
-        <p>Clique no link a seguir para acessar a página de redefinição de senha: <a style="color: #d54312;" href="https://saborselect.onrender.com/redefinir/enter-code?email=${encodedEmail}">Clique para Redefinir Senha</a></p>
+        <p>Clique no link a seguir para acessar a página de redefinição de senha: <a style="color: #d54312;" href="https://pandora.alwaysdata.net/redefinir/enter-code?email=${encodedEmail}">Clique para Redefinir Senha</a></p>
       
         <p><span style="color: #d54312;">Passo 2:</span> Insira o Código de Redefinição</p>
       
