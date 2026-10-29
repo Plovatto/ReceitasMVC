@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
   sobrenome VARCHAR(100) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
   senha CHAR(32) NOT NULL,
-  data_nascimento DATE
+  data_nascimento DATE,
+  codigo_confirmacao VARCHAR(10)
 );
 
 CREATE TABLE IF NOT EXISTS receitas (
