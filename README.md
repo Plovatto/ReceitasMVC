@@ -4,7 +4,9 @@
 
 Aplicação web de receitas com arquitetura MVC, feita com Node.js, Express, EJS e MySQL. Cada usuário cria sua conta, cadastra receitas com foto, ingredientes e modo de preparo, e escolhe se cada receita é pública ou privada.
 
-> **Projeto de estudo (2023):** meu primeiro projeto full stack com back-end próprio, mantido aqui para mostrar minha evolução como desenvolvedora. O projeto não está hospedado; veja abaixo como executá-lo localmente.
+**Acesse o app:** https://pandora.alwaysdata.net/
+
+> **Projeto de estudo (2023):** meu primeiro projeto full stack com back-end próprio, mantido aqui para mostrar minha evolução como desenvolvedora.
 
 <p align="center">
   <img src="docs/receitas.png" alt="Página de receitas com busca, botão de adicionar receita e cards com fotos dos pratos" width="900">
