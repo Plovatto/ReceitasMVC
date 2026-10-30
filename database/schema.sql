@@ -5,9 +5,11 @@ CREATE TABLE IF NOT EXISTS usuarios (
   nome VARCHAR(100) NOT NULL,
   sobrenome VARCHAR(100) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
-  senha CHAR(32) NOT NULL,
+  senha VARCHAR(255) NOT NULL,
   data_nascimento DATE,
-  codigo_confirmacao VARCHAR(10)
+  codigo_confirmacao VARCHAR(10),
+  codigo_expira DATETIME,
+  codigo_tentativas TINYINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS receitas (
