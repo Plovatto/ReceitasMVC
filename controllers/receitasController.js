@@ -143,11 +143,10 @@ const exibirDetalhesReceita = (req, res) => {
       return res.status(500).send("Erro interno ao carregar a receita.");
     }
 
-    if (!receita) {
+    const ehDono = receita && receita.usuario_id === req.session.userId;
+    if (!receita || (receita.classificacao !== "pública" && !ehDono)) {
       return res.status(404).send("Receita não encontrada.");
     }
-
-    const userId = req.session.userId;
 
     receitaModel.buscarNomeUsuario(
       receita.usuario_id,

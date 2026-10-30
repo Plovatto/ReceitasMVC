@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const RedefinirModel = require("../models/redefinirModel");
-const shortUUID = require("short-uuid");
+const crypto = require("crypto");
 
 const providerConfig = {
   host: "smtp.gmail.com",
@@ -74,10 +74,10 @@ const showConfirmEmailPage = async (req, res) => {
   res.render("confirm-email");
 };
 
+const VALIDADE_REDEFINICAO_MS = 15 * 60 * 1000;
+
 function generateCode() {
-  const translator = shortUUID();
-  const code = translator.new();
-  return code.substring(0, 6);
+  return crypto.randomInt(0, 1000000).toString().padStart(6, "0");
 }
 
 const sendCode = async (req, res) => {
@@ -92,7 +92,7 @@ const sendCode = async (req, res) => {
       await RedefinirModel.updateUserCode(email, code);
       await sendCodeByEmail(email, code, nome, sobrenome);
       req.session.redefinirEmail = email;
-      res.redirect(`/redefinir/enter-code?email=${email}`);
+      res.redirect(`/redefinir/enter-code?email=${encodeURIComponent(email)}`);
     } else {
       console.log("Usuário não encontrado:", email);
       res.render("confirm-email", { errorMessage: "E-mail não encontrado" });
@@ -109,14 +109,18 @@ const showEnterCodePage = async (req, res) => {
 };
 const verifyCode = async (req, res) => {
   const { email, code1, code2, code3, code4, code5, code6 } = req.body;
-  const code = code1 + code2 + code3 + code4 + code5 + code6;
+  const code = [code1, code2, code3, code4, code5, code6].join("").trim();
   try {
-    const user = await RedefinirModel.findByEmail(email);
+    const valido = await RedefinirModel.consumeUserCode(email, code);
 
-    if (user && user.length > 0 && user[0].codigo_confirmacao === code) {
-      res.redirect(`/redefinir/reset-password?email=${email}`);
+    if (valido) {
+      req.session.redefinicao = {
+        email,
+        expiraEm: Date.now() + VALIDADE_REDEFINICAO_MS,
+      };
+      res.redirect("/redefinir/reset-password");
     } else {
-      const errorMessage = "Código incorreto. Tente novamente.";
+      const errorMessage = "Código incorreto ou expirado. Tente novamente.";
       res.render("enter-code", { email, errorMessage });
     }
   } catch (error) {
@@ -125,28 +129,40 @@ const verifyCode = async (req, res) => {
   }
 };
 
+const redefinicaoAutorizada = (req) => {
+  const { redefinicao } = req.session;
+  return Boolean(redefinicao && redefinicao.expiraEm > Date.now());
+};
+
 const showResetPasswordPage = async (req, res) => {
-  const { email } = req.query;
-  res.render("reset-password", { email });
+  if (!redefinicaoAutorizada(req)) {
+    return res.redirect("/redefinir/confirm-email");
+  }
+  res.render("reset-password");
 };
 
 const resetPassword = async (req, res) => {
-  const { email, newPassword, confirmNewPassword } = req.body;
-  if (newPassword !== confirmNewPassword) {
+  if (!redefinicaoAutorizada(req)) {
+    return res.redirect("/redefinir/confirm-email");
+  }
+
+  const { email } = req.session.redefinicao;
+  const { newPassword, confirmNewPassword } = req.body;
+  if (!newPassword || newPassword !== confirmNewPassword) {
     return res.render("reset-password", {
-      email,
-      error: "As senhas não coincidem. Por favor, tente novamente.",
+      errorMessage: "As senhas não coincidem. Por favor, tente novamente.",
     });
   }
   try {
     await RedefinirModel.updateUserPassword(email, newPassword);
+    delete req.session.redefinicao;
 
     res.redirect("/login");
   } catch (error) {
     console.error("Erro ao redefinir senha:", error);
     res.render("reset-password", {
-      email,
-      error: "Erro ao redefinir senha. Por favor, tente novamente mais tarde.",
+      errorMessage:
+        "Erro ao redefinir senha. Por favor, tente novamente mais tarde.",
     });
   }
 };
@@ -165,7 +181,9 @@ const resendCode = async (req, res) => {
       const code = generateCode();
       await RedefinirModel.updateUserCode(redefinirEmail, code);
       await sendCodeByEmail(redefinirEmail, code, nome, sobrenome);
-      res.redirect(`/redefinir/enter-code?email=${redefinirEmail}`);
+      res.redirect(
+        `/redefinir/enter-code?email=${encodeURIComponent(redefinirEmail)}`
+      );
     } else {
       console.log("Usuário não encontrado:", redefinirEmail);
       res.render("confirm-email", { errorMessage: "E-mail não encontrado" });

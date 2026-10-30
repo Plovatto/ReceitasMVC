@@ -53,7 +53,7 @@
       <ul>
         <% const ingredientes = typeof receita.ingredientes === 'string' ? receita.ingredientes.split('\n') : []; %>
         <% for (let i = 0; i < ingredientes.length; i++) { %>
-          <li><%- ingredientes[i] %></li>
+          <li><%= ingredientes[i] %></li>
         <% } %>
       </ul>
       <br> <br>
@@ -62,7 +62,7 @@
       <ol>
         <% const modoPreparoItems = typeof receita.modo_preparo === 'string' ? receita.modo_preparo.split('\n') : []; %>
         <% for (let i = 0; i < modoPreparoItems.length; i++) { %>
-          <li><%- modoPreparoItems[i] %></li> <br>
+          <li><%= modoPreparoItems[i] %></li> <br>
         <% } %>
         <br>
       </ol>

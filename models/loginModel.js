@@ -1,11 +1,26 @@
 const pool = require("../models/bancoconfig");
-const crypto = require("crypto");
+const { gerarHash, compararSenha, ehHashLegado } = require("../utils/senha");
 
-const verificarUsuario = (email, senha, callback) => {
-  const md5Hash = crypto.createHash("md5");
-  const hashedSenha = md5Hash.update(senha).digest("hex");
-  const query = "SELECT * FROM usuarios WHERE email = ? AND senha = ?";
-  pool.query(query, [email, hashedSenha], callback);
+const verificarUsuario = async (email, senha) => {
+  const [usuarios] = await pool
+    .promise()
+    .query("SELECT * FROM usuarios WHERE email = ?", [email]);
+  const usuario = usuarios[0];
+
+  if (!usuario || !(await compararSenha(senha, usuario.senha))) {
+    return null;
+  }
+
+  if (ehHashLegado(usuario.senha)) {
+    await pool
+      .promise()
+      .query("UPDATE usuarios SET senha = ? WHERE id = ?", [
+        await gerarHash(senha),
+        usuario.id,
+      ]);
+  }
+
+  return usuario;
 };
 
 module.exports = {

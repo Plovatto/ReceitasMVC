@@ -1,7 +1,7 @@
 const pool = require("../models/bancoconfig");
-const crypto = require("crypto");
+const { gerarHash } = require("../utils/senha");
 
-const criarNovoUsuarioNoBanco = (
+const criarNovoUsuarioNoBanco = async (
   nome,
   sobrenome,
   email,
@@ -9,30 +9,20 @@ const criarNovoUsuarioNoBanco = (
   dataNascimento,
   callback
 ) => {
-  const md5Hash = crypto.createHash("md5");
-  const hashedSenha = md5Hash.update(senha).digest("hex");
-
-  pool.query(
-    "INSERT INTO usuarios (nome, sobrenome, email, senha, data_nascimento) VALUES (?, ?, ?, ?, ?)",
-    [nome, sobrenome, email, hashedSenha, dataNascimento],
-    (err, result) => {
-      if (err) {
-        console.error("Erro ao cadastrar o usuário:", err);
-        return callback(err, null);
-      }
-
-      console.log(
-        "Novo usuário cadastrado com ID:",
-        result.insertId,
-        nome,
-        sobrenome,
-        email,
-        hashedSenha,
-        dataNascimento
+  try {
+    const hashedSenha = await gerarHash(senha);
+    const [result] = await pool
+      .promise()
+      .query(
+        "INSERT INTO usuarios (nome, sobrenome, email, senha, data_nascimento) VALUES (?, ?, ?, ?, ?)",
+        [nome, sobrenome, email, hashedSenha, dataNascimento]
       );
-      callback(null, result.insertId);
-    }
-  );
+
+    callback(null, result.insertId);
+  } catch (err) {
+    console.error("Erro ao cadastrar o usuário:", err);
+    callback(err, null);
+  }
 };
 
 const buscarUsuarioPorEmail = (email, callback) => {
